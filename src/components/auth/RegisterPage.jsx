@@ -3,31 +3,23 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { base44 } from "@/api/base44Client";
 import { AuthLayout } from "@/components/auth/AuthLayout";
-import { MfaFlow } from "@/components/auth/MfaFlow";
-import { MfaScreen } from "@/components/auth/MfaParts";
 import { AuthError, AuthLink, GoogleButton, OrDivider, SubmitButton } from "@/components/auth/parts";
 import { Input } from "@/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
-const isAlreadyVerified = (err) => err?.status === 400 && /already verified/i.test(err?.message ?? "");
-
 /**
- * The /register page: register → OTP → verifyOtp → setToken. Registration alone
- * does not sign the user in (the account is unverified), so the code step is never
- * skipped and loginViaEmailPassword is never called right after register.
+ * The /register page. Supabase emails a confirmation link; if confirmation is switched off
+ * the visitor is signed in straight away and sent on.
  */
 export function RegisterPage() {
   const returnTo = safeReturnTo();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [otpCode, setOtpCode] = useState("");
   const [step, setStep] = useState("form");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [mfaChallenge, setMfaChallenge] = useState(null);
 
   async function register(e) {
     e.preventDefault();
@@ -38,8 +30,9 @@ export function RegisterPage() {
     }
     setBusy(true);
     try {
-      await base44.auth.register({ email, password });
-      setStep("otp");
+      const { needsConfirmation } = await base44.auth.register({ email, password });
+      if (needsConfirmation) setStep("check_email");
+      else window.location.href = returnTo;
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally {
@@ -47,81 +40,34 @@ export function RegisterPage() {
     }
   }
 
-  async function verify(e) {
-    e.preventDefault();
-    setError("");
-    setBusy(true);
-    try {
-      const result = await base44.auth.verifyOtp({ email, otpCode });
-      if (result?.mfa_required) {
-        setMfaChallenge(result);
-        return;
-      }
-      if (result?.access_token) base44.auth.setToken(result.access_token);
-      window.location.href = returnTo;
-    } catch (err) {
-      // Verified server-side but the answer never arrived: the code is spent and
-      // there is no token, so the only way forward is a normal sign-in.
-      if (isAlreadyVerified(err)) setStep("already_verified");
-      else setError(err.message || "Invalid verification code");
-      setBusy(false);
-    }
-  }
-
   async function resend() {
     setError("");
     try {
-      await base44.auth.resendOtp(email);
-      toast("Code sent", { description: "Check your email for the new code." });
+      await base44.auth.resendConfirmation(email);
+      toast("Email sent", { description: "Check your inbox for a new confirmation link." });
     } catch (err) {
-      if (isAlreadyVerified(err)) setStep("already_verified");
-      else setError(err.message || "Failed to resend code");
+      setError(err.message || "Failed to resend the email");
     }
   }
 
-  // The account is verified; the second sign-in step replaces the whole page and finishes signing in.
-  if (mfaChallenge) return <MfaScreen><MfaFlow challenge={mfaChallenge} returnTo={returnTo} /></MfaScreen>;
-
-  if (step === "already_verified") {
+  if (step === "check_email") {
     return (
-      <AuthLayout icon={UserPlus} title="Create your account" subtitle="Sign up to get started">
+      <AuthLayout icon={UserPlus} title="Check your email" subtitle="One more step">
+        <AuthError>{error}</AuthError>
         <p className="mb-4 text-sm text-muted-foreground">
-          <span className="font-medium text-foreground">{email}</span> is already verified. Sign in to continue.
+          We sent a confirmation link to <span className="font-medium text-foreground">{email}</span>. Open it to finish creating your account, then log in.
         </p>
-        <AuthLink to="/login" returnTo={returnTo} className="inline-flex h-12 w-full items-center justify-center rounded-md bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          Sign in
-        </AuthLink>
-      </AuthLayout>
-    );
-  }
-
-  if (step === "otp") {
-    return (
-      <AuthLayout icon={UserPlus} title="Create your account" subtitle="Sign up to get started">
-        <form onSubmit={verify}>
-          <p className="mb-4 text-sm text-muted-foreground">
-            We sent a 6-digit code to <span className="font-medium text-foreground">{email}</span>.
-          </p>
-          <AuthError>{error}</AuthError>
-          <div className="mb-6 flex justify-center">
-            <InputOTP maxLength={6} value={otpCode} onChange={setOtpCode} autoFocus autoComplete="one-time-code">
-              <InputOTPGroup>
-                {[0, 1, 2, 3, 4, 5].map((i) => (
-                  <InputOTPSlot key={i} index={i} />
-                ))}
-              </InputOTPGroup>
-            </InputOTP>
-          </div>
-          <SubmitButton busy={busy} busyLabel="Verifying..." disabled={busy || otpCode.length < 6}>
-            Verify
-          </SubmitButton>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Didn't receive the code?{" "}
-            <button type="button" onClick={resend} className="font-medium text-primary hover:underline">
-              Resend
-            </button>
-          </p>
-        </form>
+        <p className="text-center text-sm text-muted-foreground">
+          Didn't get it?{" "}
+          <button type="button" onClick={resend} className="font-medium text-primary hover:underline">
+            Resend
+          </button>
+        </p>
+        <p className="mt-4 text-center text-sm">
+          <AuthLink to="/login" returnTo={returnTo}>
+            Back to log in
+          </AuthLink>
+        </p>
       </AuthLayout>
     );
   }

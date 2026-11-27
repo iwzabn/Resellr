@@ -2,6 +2,7 @@ import { queryOptions, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, useContext, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { currentUrl } from "@/lib/authReturnTo";
+import { getAccessToken } from "@/lib/supabase";
 
 /**
  * The visitor, resolved once per page load and cached in the router's QueryClient:
@@ -14,8 +15,9 @@ import { currentUrl } from "@/lib/authReturnTo";
 export const authQuery = queryOptions({
   queryKey: ["auth", "me"],
   queryFn: async () => {
-    // No token means no session; /me could only answer 401.
-    if (!base44.auth.hasToken()) return { user: null, error: null };
+    // No session means no user. getAccessToken waits for Supabase to finish restoring the session,
+    // including one arriving in the URL after a Google sign-in or an email link.
+    if (typeof window === "undefined" || !(await getAccessToken())) return { user: null, error: null };
     try {
       return { user: await base44.auth.me(), error: null };
     } catch (err) {

@@ -4,9 +4,7 @@ import { AuthLayout } from "@/components/auth/AuthLayout";
 import { AuthError, AuthLink, GoogleButton, OrDivider, SubmitButton } from "@/components/auth/parts";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MfaFlow } from "@/components/auth/MfaFlow";
-import { MfaScreen } from "@/components/auth/MfaParts";
-import { loginWithMfa } from "@/lib/authMfa";
+import { base44 } from "@/api/base44Client";
 import { safeReturnTo } from "@/lib/authReturnTo";
 
 // The /login page. ?returnTo= (or the platform's ?from_url=) is where the visitor
@@ -17,18 +15,13 @@ export function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [mfaChallenge, setMfaChallenge] = useState(null);
 
   async function submit(e) {
     e.preventDefault();
     setError("");
     setBusy(true);
     try {
-      const result = await loginWithMfa(email, password);
-      if (result.mfa_required) {
-        setMfaChallenge(result);
-        return;
-      }
+      await base44.auth.signIn({ email, password });
       // A hard redirect: the app re-initializes with the new session.
       window.location.href = returnTo;
     } catch (err) {
@@ -36,9 +29,6 @@ export function LoginPage() {
       setBusy(false);
     }
   }
-
-  // The second sign-in step (authenticator app or text message) replaces the whole page.
-  if (mfaChallenge) return <MfaScreen><MfaFlow challenge={mfaChallenge} returnTo={returnTo} /></MfaScreen>;
 
   return (
     <AuthLayout icon={LogIn} title="Welcome back" subtitle="Log in to your account">

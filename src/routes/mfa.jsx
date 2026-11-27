@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { MfaPage } from "@/components/auth/MfaPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/mfa")({ ssr: false, component: MfaPage });
+// Two-step verification was a Base44 platform feature and is not part of this deployment.
+export const Route = createFileRoute("/mfa")({ beforeLoad: () => { throw redirect({ to: "/login" }); } });

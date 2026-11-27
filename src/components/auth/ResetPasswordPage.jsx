@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 
 // The /reset-password page; the reset email links here with ?token=.
 export function ResetPasswordPage() {
-  // Read raw: the router's search parser would turn an all-digit token into a number.
-  const token = new URLSearchParams(window.location.search).get("token");
+  // The reset email signs the visitor into a short-lived recovery session; updating the password uses it.
+  const token = true;
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -25,7 +25,7 @@ export function ResetPasswordPage() {
     }
     setBusy(true);
     try {
-      await base44.auth.resetPassword({ resetToken: token, newPassword: password });
+      await base44.auth.resetPassword({ newPassword: password });
       window.location.href = "/login";
     } catch (err) {
       setError(err.message || "Failed to reset password");

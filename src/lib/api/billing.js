@@ -12,9 +12,9 @@ export const createPremiumCheckout = createServerFn({ method: "POST" })
   .middleware([requireUser])
   .handler(async ({ context }) => {
     const headers = getRequest().headers;
-    const origin = headers.get("Base44-Api-Url");
-    const appId = headers.get("Base44-App-Id");
-    if (!origin || !appId) {
+    const proto = headers.get("x-forwarded-proto") || "https";
+    const origin = process.env.APP_URL || `${proto}://${headers.get("host")}`;
+    if (!headers.get("host") && !process.env.APP_URL) {
       throw new Error("Checkout is unavailable right now. Please try again shortly.");
     }
 
@@ -35,9 +35,7 @@ export const createPremiumCheckout = createServerFn({ method: "POST" })
       success_url: `${origin}/pricing?checkout=success`,
       cancel_url: `${origin}/pricing?checkout=cancelled`,
       client_reference_id: context.user.id,
-      "metadata[base44_app_id]": appId,
       "metadata[user_id]": context.user.id,
-      "subscription_data[metadata][base44_app_id]": appId,
       "subscription_data[metadata][user_id]": context.user.id,
     });
     if (context.user.email) body.set("customer_email", context.user.email);

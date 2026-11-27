@@ -1,4 +1,5 @@
-import { createClientFromRequest, getAccessToken } from "@base44/sdk";
+import { createClientFromRequest } from "@/lib/b44-server";
+import { getAccessToken } from "@/lib/supabase";
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequest, setResponseStatus } from "@tanstack/react-start/server";
 
@@ -17,7 +18,7 @@ const withGetBase44 = (next, request = getRequest()) => {
 // access rules apply). Anonymous visitors send nothing and get an anonymous client.
 export const authMiddleware = createMiddleware({ type: "function" })
   .client(async ({ next }) => {
-    const token = typeof window === "undefined" ? null : getAccessToken();
+    const token = typeof window === "undefined" ? null : await getAccessToken();
     return next({ headers: token ? { Authorization: `Bearer ${token}` } : {} });
   })
   .server(({ next }) => withGetBase44(next));

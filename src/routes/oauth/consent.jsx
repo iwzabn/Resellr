@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { ConsentPage } from "@/components/auth/ConsentPage";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/oauth/consent")({ ssr: false, component: ConsentPage });
+// The MCP consent screen was a Base44 platform feature and is not part of this deployment.
+export const Route = createFileRoute("/oauth/consent")({ beforeLoad: () => { throw redirect({ to: "/" }); } });
