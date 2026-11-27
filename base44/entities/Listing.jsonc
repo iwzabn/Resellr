@@ -1,0 +1,176 @@
+{
+  "name": "Listing",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "price": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "AUD"
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "category_name": {
+      "type": "string"
+    },
+    "subcategory": {
+      "type": "string"
+    },
+    "condition": {
+      "type": "string"
+    },
+    "brand": {
+      "type": "string"
+    },
+    "stock": {
+      "type": "number",
+      "default": 1
+    },
+    "delivery_options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "city": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string",
+      "default": "Australia"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "pending_review",
+        "paused",
+        "sold",
+        "removed"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "yellow",
+        "blue",
+        "red"
+      ],
+      "default": "active"
+    },
+    "check_verdict": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "needs_review",
+        "blocked"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "red"
+      ]
+    },
+    "is_sponsored": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false
+    },
+    "views": {
+      "type": "number",
+      "default": 0
+    },
+    "enquiry_count": {
+      "type": "number",
+      "default": 0
+    },
+    "seller_id": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "seller_username": {
+      "type": "string"
+    },
+    "seller_avatar": {
+      "type": "string"
+    },
+    "renewed_date": {
+      "type": "string"
+    },
+    "moderation_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "price",
+    "category_slug"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "active"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

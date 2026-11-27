@@ -1,0 +1,84 @@
+{
+  "name": "ItemCheck",
+  "type": "object",
+  "properties": {
+    "fingerprint": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "public",
+        "listing"
+      ],
+      "enumColors": [
+        "blue",
+        "purple"
+      ],
+      "default": "public"
+    },
+    "title": {
+      "type": "string"
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "allowed",
+        "needs_review",
+        "blocked"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "red"
+      ]
+    },
+    "reason": {
+      "type": "string"
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "suggestion": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "checked_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "fingerprint",
+    "verdict"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

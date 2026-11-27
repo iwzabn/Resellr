@@ -1,0 +1,78 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "subject_user_id": {
+      "type": "string"
+    },
+    "subject_label": {
+      "type": "string"
+    },
+    "listing_id": {
+      "type": "string"
+    },
+    "reviewer_id": {
+      "type": "string"
+    },
+    "reviewer_name": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number"
+    },
+    "body": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "published",
+        "pending",
+        "removed"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "red"
+      ],
+      "default": "published"
+    },
+    "moderation_note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject_user_id",
+    "rating"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "published"
+        },
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

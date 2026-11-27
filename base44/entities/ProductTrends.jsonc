@@ -1,0 +1,128 @@
+{
+  "name": "ProductTrends",
+  "type": "object",
+  "properties": {
+    "trend_key": {
+      "type": "string"
+    },
+    "trend_type": {
+      "type": "string",
+      "enum": [
+        "product",
+        "category",
+        "brand",
+        "search",
+        "price_shift",
+        "supply_gap"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "pink",
+        "gray",
+        "yellow",
+        "green"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "ref_id": {
+      "type": "string"
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string",
+      "default": "Australia"
+    },
+    "region": {
+      "type": "string"
+    },
+    "period_days": {
+      "type": "number",
+      "default": 30
+    },
+    "current_count": {
+      "type": "number",
+      "default": 0
+    },
+    "previous_count": {
+      "type": "number",
+      "default": 0
+    },
+    "momentum_pct": {
+      "type": "number"
+    },
+    "enquiries": {
+      "type": "number",
+      "default": 0
+    },
+    "listings": {
+      "type": "number",
+      "default": 0
+    },
+    "avg_price": {
+      "type": "number"
+    },
+    "previous_avg_price": {
+      "type": "number"
+    },
+    "signal_strength": {
+      "type": "string",
+      "enum": [
+        "insufficient",
+        "early",
+        "moderate",
+        "strong"
+      ],
+      "enumColors": [
+        "gray",
+        "yellow",
+        "blue",
+        "green"
+      ]
+    },
+    "confidence": {
+      "type": "number",
+      "default": 0
+    },
+    "summary": {
+      "type": "string"
+    },
+    "basis": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string"
+    },
+    "has_real_data": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "trend_key",
+    "trend_type",
+    "label"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

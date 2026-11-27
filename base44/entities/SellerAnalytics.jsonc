@@ -1,0 +1,85 @@
+{
+  "name": "SellerAnalytics",
+  "type": "object",
+  "properties": {
+    "seller_id": {
+      "type": "string"
+    },
+    "period_days": {
+      "type": "number",
+      "default": 30
+    },
+    "active_listings": {
+      "type": "number",
+      "default": 0
+    },
+    "total_listings": {
+      "type": "number",
+      "default": 0
+    },
+    "views": {
+      "type": "number",
+      "default": 0
+    },
+    "enquiries": {
+      "type": "number",
+      "default": 0
+    },
+    "accepted": {
+      "type": "number",
+      "default": 0
+    },
+    "conversion_pct": {
+      "type": "number"
+    },
+    "avg_listing_price": {
+      "type": "number"
+    },
+    "completed_sales": {
+      "type": "number"
+    },
+    "top_listing_label": {
+      "type": "string"
+    },
+    "has_activity": {
+      "type": "boolean",
+      "default": false
+    },
+    "computed_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "seller_id",
+    "period_days"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.seller_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

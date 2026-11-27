@@ -1,0 +1,75 @@
+{
+  "name": "UserProfile",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string",
+      "default": "Australia"
+    },
+    "city": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "is_seller": {
+      "type": "boolean",
+      "default": true
+    },
+    "verified_seller": {
+      "type": "boolean",
+      "default": false
+    },
+    "seller_since": {
+      "type": "string"
+    },
+    "preferred_contact": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id"
+  ],
+  "rls": {
+    "read": {},
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "name": "Advertisement",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "target_url": {
+      "type": "string"
+    },
+    "placement": {
+      "type": "string",
+      "enum": [
+        "homepage_banner",
+        "category_boost",
+        "rail"
+      ]
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "advertiser_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "ended"
+      ],
+      "enumColors": [
+        "green",
+        "yellow",
+        "gray"
+      ],
+      "default": "active"
+    },
+    "starts_at": {
+      "type": "string"
+    },
+    "ends_at": {
+      "type": "string"
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "placement"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.status": "active"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "name": "RiskAssessment",
+  "type": "object",
+  "properties": {
+    "enquiry_id": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "insufficient",
+        "low",
+        "caution"
+      ],
+      "enumColors": [
+        "gray",
+        "green",
+        "yellow"
+      ]
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "factors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "evidence_type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "missing_info": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "model": {
+      "type": "string"
+    },
+    "evidence_counts": {
+      "type": "string"
+    },
+    "generated_reason": {
+      "type": "string"
+    },
+    "verification_note": {
+      "type": "string"
+    },
+    "location_note": {
+      "type": "string"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "requested",
+        "reviewed",
+        "corrected"
+      ],
+      "enumColors": [
+        "gray",
+        "yellow",
+        "blue",
+        "green"
+      ],
+      "default": "none"
+    },
+    "review_note": {
+      "type": "string"
+    },
+    "review_outcome": {
+      "type": "string"
+    },
+    "reviewed_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "enquiry_id",
+    "level"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "name": "AnalyticsEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "listing_view",
+        "enquiry",
+        "search",
+        "listing_created"
+      ]
+    },
+    "listing_id": {
+      "type": "string"
+    },
+    "category_slug": {
+      "type": "string"
+    },
+    "category_name": {
+      "type": "string"
+    },
+    "brand": {
+      "type": "string"
+    },
+    "search_term": {
+      "type": "string"
+    },
+    "seller_id": {
+      "type": "string"
+    },
+    "region": {
+      "type": "string"
+    },
+    "is_demo": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "event_type"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

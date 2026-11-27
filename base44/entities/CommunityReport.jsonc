@@ -1,0 +1,145 @@
+{
+  "name": "CommunityReport",
+  "type": "object",
+  "properties": {
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "user",
+        "listing"
+      ]
+    },
+    "target_id": {
+      "type": "string"
+    },
+    "target_label": {
+      "type": "string"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "suspected_scam",
+        "misleading_listing",
+        "counterfeit_product",
+        "failed_transaction",
+        "delivery_issue",
+        "unsafe_arrangement",
+        "harassment",
+        "spam",
+        "prohibited_product",
+        "other"
+      ]
+    },
+    "description": {
+      "type": "string"
+    },
+    "evidence_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reporter_id": {
+      "type": "string"
+    },
+    "reporter_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "under_review",
+        "resolved",
+        "dismissed"
+      ],
+      "enumColors": [
+        "yellow",
+        "blue",
+        "green",
+        "gray"
+      ],
+      "default": "pending"
+    },
+    "verification": {
+      "type": "string",
+      "enum": [
+        "unverified",
+        "verified",
+        "unsubstantiated"
+      ],
+      "enumColors": [
+        "gray",
+        "green",
+        "red"
+      ],
+      "default": "unverified"
+    },
+    "resolution_note": {
+      "type": "string"
+    },
+    "appeal_status": {
+      "type": "string",
+      "enum": [
+        "none",
+        "submitted",
+        "upheld",
+        "denied"
+      ],
+      "enumColors": [
+        "gray",
+        "blue",
+        "green",
+        "red"
+      ],
+      "default": "none"
+    },
+    "duplicate_of": {
+      "type": "string"
+    },
+    "risk_signal": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "possible_mass_report"
+      ],
+      "enumColors": [
+        "gray",
+        "yellow"
+      ],
+      "default": "standard"
+    }
+  },
+  "required": [
+    "target_type",
+    "target_id",
+    "reason"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "name": "Enquiry",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string"
+    },
+    "listing_title": {
+      "type": "string"
+    },
+    "listing_price": {
+      "type": "number"
+    },
+    "listing_currency": {
+      "type": "string",
+      "default": "AUD"
+    },
+    "listing_image": {
+      "type": "string"
+    },
+    "seller_id": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "buyer_id": {
+      "type": "string"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "buyer_username": {
+      "type": "string"
+    },
+    "buyer_city": {
+      "type": "string"
+    },
+    "buyer_region": {
+      "type": "string"
+    },
+    "location_source": {
+      "type": "string",
+      "enum": [
+        "self_reported",
+        "profile",
+        "not_shared"
+      ],
+      "enumColors": [
+        "blue",
+        "purple",
+        "gray"
+      ],
+      "default": "not_shared"
+    },
+    "location_granularity": {
+      "type": "string",
+      "default": "hidden"
+    },
+    "buyer_message": {
+      "type": "string"
+    },
+    "arrangement": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "info_requested",
+        "closed"
+      ],
+      "enumColors": [
+        "yellow",
+        "green",
+        "red",
+        "blue",
+        "gray"
+      ],
+      "default": "pending"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "insufficient",
+        "low",
+        "caution",
+        "pending"
+      ],
+      "enumColors": [
+        "gray",
+        "green",
+        "yellow",
+        "blue"
+      ],
+      "default": "pending"
+    },
+    "risk_confidence": {
+      "type": "number"
+    },
+    "risk_summary": {
+      "type": "string"
+    },
+    "conversation_id": {
+      "type": "string"
+    },
+    "seller_notes": {
+      "type": "string"
+    },
+    "decided_at": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "listing_id",
+    "buyer_id",
+    "seller_id"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "data.seller_id": "{{user.id}}"
+        },
+        {
+          "data.buyer_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "create": {
+      "data.buyer_id": "{{user.id}}"
+    },
+    "update": {
+      "$or": [
+        {
+          "data.seller_id": "{{user.id}}"
+        },
+        {
+          "data.buyer_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
