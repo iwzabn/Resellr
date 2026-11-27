@@ -7,6 +7,11 @@ import { defineConfig } from "vite";
 const secretsModule = fileURLToPath(new URL("./src/lib/secrets.server.js", import.meta.url));
 
 export default defineConfig({
-  resolve: { alias: { "base44:runtime": secretsModule } },
+  resolve: {
+    alias: {
+      "base44:runtime": secretsModule,
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   plugins: [tanstackStart({ srcDirectory: "src" }), react()],
 });
