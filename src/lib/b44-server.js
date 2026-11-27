@@ -18,6 +18,26 @@ const caller = (headers) => async (op, entity, args = {}) => {
   return body;
 };
 
+// Service-role reads are public aggregates (feeds, counts, trends) fetched many times per page.
+// Identical calls are coalesced and kept for a few seconds; any write through this server clears them.
+const TTL_MS = 20_000;
+const MAX_ENTRIES = 500;
+const cache = new Map();
+const withCache = (call) => (op, entity, args = {}) => {
+  if (op !== "list" && op !== "filter" && op !== "count" && op !== "get") {
+    cache.clear();
+    return call(op, entity, args);
+  }
+  const key = JSON.stringify([op, entity, args]);
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < TTL_MS) return hit.promise;
+  if (cache.size >= MAX_ENTRIES) cache.clear();
+  const promise = call(op, entity, args);
+  cache.set(key, { at: Date.now(), promise });
+  promise.catch(() => cache.delete(key));
+  return promise;
+};
+
 export function createClientFromRequest(request) {
   const authorization = request.headers.get("authorization");
   const userHeaders = { Authorization: authorization || `Bearer ${SUPABASE_ANON_KEY}` };
@@ -26,7 +46,7 @@ export function createClientFromRequest(request) {
     ? { Authorization: `Bearer ${SUPABASE_ANON_KEY}`, "x-internal-secret": serviceKey }
     : { Authorization: `Bearer ${SUPABASE_ANON_KEY}` };
   const asUser = caller(userHeaders);
-  const asService = caller(serviceHeaders);
+  const asService = withCache(caller(serviceHeaders));
   return {
     entities: entityClient(asUser),
     auth: { me: () => asUser("me") },
