@@ -51,7 +51,7 @@ const readLimits = async (service) => {
   };
 };
 
-const applyPlan = async (service, userId, { plan, status, priceAud, limit, reference, periodEnd }) => {
+const applyPlan = async (service, userId, { plan, status, priceAud, limit, reference, periodEnd, cancelAtPeriodEnd = false }) => {
   const page = await service.entities.Subscription
     .filter({ user_id: userId }, { limit: 1 })
     .catch(() => ({ items: [] }));
@@ -64,6 +64,7 @@ const applyPlan = async (service, userId, { plan, status, priceAud, limit, refer
     provider: "stripe",
     provider_reference: reference || "",
     current_period_end: periodEnd || "",
+    cancel_at_period_end: Boolean(cancelAtPeriodEnd),
   };
   if (existing) {
     await service.entities.Subscription.update(existing.id, payload);
@@ -93,8 +94,8 @@ const handleEvent = async (service, event, stripeKey) => {
         : PREMIUM_FALLBACK_PRICE,
       limit: limits.premium,
       reference: object.subscription || object.id,
-      periodEnd: subscription?.current_period_end
-        ? new Date(subscription.current_period_end * 1000).toISOString()
+      periodEnd: (subscription?.current_period_end ?? subscription?.items?.data?.[0]?.current_period_end)
+        ? new Date((subscription.current_period_end ?? subscription.items.data[0].current_period_end) * 1000).toISOString()
         : "",
     });
     return;
@@ -122,7 +123,10 @@ const handleEvent = async (service, event, stripeKey) => {
       priceAud: active || grace ? priceAud : 0,
       limit: active || grace ? limits.premium : limits.free,
       reference: object.id,
-      periodEnd: object.current_period_end ? new Date(object.current_period_end * 1000).toISOString() : "",
+      periodEnd: (object.current_period_end ?? object.items?.data?.[0]?.current_period_end)
+        ? new Date((object.current_period_end ?? object.items.data[0].current_period_end) * 1000).toISOString()
+        : "",
+      cancelAtPeriodEnd: active && Boolean(object.cancel_at_period_end),
     });
     return;
   }
